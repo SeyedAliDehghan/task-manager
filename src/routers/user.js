@@ -26,7 +26,7 @@ router.post("/users/login", async (req, res) => {
     res.send({ user, token });
     // res.send({ user:user.getPublicProfile(), token });
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send({error:e.message});
   }
 });
 
@@ -95,7 +95,6 @@ router.patch("/users/me", authMiddleware,async (req, res) => {
     return res.status(400).send({ error: "invalid updates" });
   }
   try {
-
     updates.forEach((update) => (req.auth[update] = req.body[update]));
     await req.auth.save();
     res.send(req.auth);

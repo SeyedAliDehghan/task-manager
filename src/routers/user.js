@@ -2,6 +2,8 @@ const express = require("express");
 const router = new express.Router();
 const User = require("../models/user");
 const authMiddleware = require("../middleware/auth.js");
+const multer=require('multer')
+
 
 // Create User
 router.post("/users", async (req, res) => {
@@ -155,4 +157,50 @@ router.delete("/users/me", authMiddleware,async (req, res) => {
   }
 });
 
+// upload avatar
+const upload=multer({
+  dest:'./src/avatars',
+  limits:{
+    fileSize:1000000
+  },
+  fileFilter(req,file,cb){
+    if(!file.originalname.match(/\.(jpg|png)$/)){
+      return cb(new Error('img should be .jpg/.png'))
+    }
+    cb(undefined,true)
+    // cb(new Error('file muse be a img'))
+    // cb(undefined,true)
+    // cb(undefined,false)
+  }
+})
+
+router.post('/users/me/avatar',authMiddleware,upload.single('avatar'),async (req,res)=>{
+  req.auth.avatar = req.file.buffer
+  await req.user.save()
+  res.send()
+},(error,req,res,next)=>{
+res.status(400).send({error:error.message})
+})
+// delete avatar
+router.delete('/users/me/avatar',authMiddleware,async (req,res)=>{
+  req.auth.avatar=undefined
+  await req.user.save()
+  res.send()
+})
+
+router.get('/users/:id/avatar',async(req,res)=>{
+  try{
+    const user=await User.findById(req.params.id)
+    if(!user||!user.avatar){
+      throw new Error('something went wrong')
+    }
+    res.set('Content-Type','image/jpg')
+    res.send(user.avatar)
+
+  }catch(e){
+    res.status(404).send()
+  }
+})
+// app.post('/upload',upload.single('upload'),(req,res)=>{
+// })
 module.exports = router;

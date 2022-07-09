@@ -23,6 +23,12 @@ const tasksRouter=require('./routers/task')
 
 
 
+
+
+
+
+
+
 app.use(express.json());
 app.use(usersRouter)
 app.use(tasksRouter)
@@ -32,15 +38,3 @@ app.use(tasksRouter)
 app.listen(port, () => {
   console.log("server is up on port " + port);
 });
-
-
-// const main=async()=>{
-//   // const task=await Task.findById('62b7183bf542e522fdf4de54')
-//   // await task.populate('owner')
-//   // console.log(task.owner)
-
-//   const user=await User.findById('62b7178c4d21c250d8fb7202')
-//   await user.populate('tasks')
-//   console.log(user.tasks)
-// }
-// main()
